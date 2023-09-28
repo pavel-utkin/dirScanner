@@ -1,22 +1,20 @@
 package main
 
 import (
+	grpchandler "dirScanner/internal/server/api/grpc"
+	dirscanner "dirScanner/internal/server/proto"
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 )
 
 func main() {
-	err := filepath.Walk(".",
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			fmt.Println(path, info.Size(), "Bytes")
-			return nil
-		})
+	handlerGrpc := grpchandler.NewHandler()
+
+	dirResponse, err := handlerGrpc.Scan(dirscanner.DirScanRequest{
+		Path: ".",
+	})
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
+	fmt.Println(dirResponse)
 }
