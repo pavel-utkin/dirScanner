@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package server;
+
+option go_package = "./dirscanner";
+
+service Dirscanner {
+  rpc Scan(DirScanRequest) returns (DirScanResponse) {}
+}
+
+message DirScanRequest {
+  string path = 1;
+}
+
+message DirScanResponse {
+  DirTree tree = 1;
+}
+
+message DirTree {
+  repeated string files = 1;
+}
+
+
+
