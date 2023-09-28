@@ -1,20 +1,15 @@
 package main
 
 import (
+	"dirScanner/internal/server/api"
 	grpchandler "dirScanner/internal/server/api/grpc"
-	dirscanner "dirScanner/internal/server/proto"
-	"fmt"
-	"log"
+	"dirScanner/internal/server/config"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	handlerGrpc := grpchandler.NewHandler()
-
-	dirResponse, err := handlerGrpc.Scan(dirscanner.DirScanRequest{
-		Path: ".",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(dirResponse)
+	logger := logrus.New()
+	serverConfig := config.NewConfig()
+	handlerGrpc := grpchandler.NewHandler(logger)
+	go api.StartGRPCService(handlerGrpc, serverConfig)
 }

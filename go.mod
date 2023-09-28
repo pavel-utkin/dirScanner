@@ -3,7 +3,9 @@ module dirScanner
 go 1.19
 
 require (
+	github.com/caarlos0/env/v6 v6.10.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect

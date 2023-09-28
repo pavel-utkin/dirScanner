@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	grpc "dirScanner/internal/server/proto"
 	"fmt"
 	"log"
@@ -8,10 +9,9 @@ import (
 	"path/filepath"
 )
 
-func (h *Handler) Scan(request grpc.DirScanRequest) (*grpc.DirScanResponse, error) {
-
+func (h *Handler) Scan(ctx context.Context, request *grpc.DirScanRequest) (*grpc.DirScanResponse, error) {
 	// scan dirs
-
+	println(ctx)
 	err := filepath.Walk(request.Path,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
