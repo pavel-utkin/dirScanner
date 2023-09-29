@@ -19,7 +19,7 @@ func (h *Handler) Scan(ctx context.Context, request *grpc.DirScanRequest) (*grpc
 			return nil
 		})
 	if err != nil {
-		return &grpc.DirScanResponse{}, nil
+		return &grpc.DirScanResponse{}, err
 	}
 	return currentDir, nil
 }
