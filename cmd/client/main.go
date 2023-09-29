@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"os"
+	"sync"
 )
 
 func main() {
@@ -33,17 +34,24 @@ func main() {
 			log.Fatal(err)
 		}
 
+		wg := new(sync.WaitGroup)
+
 		_, ok := cacheMap.GetValue(path)
 		if !ok {
-			fmt.Println("cache doesn't have value, need to request")
-			dirResponse, err := dirscannerClient.Scan(ctx, &dirscanner.DirScanRequest{
-				Path: path,
-			})
-			if err != nil {
-				log.Fatal(err)
-			}
-			cacheMap.SetValue(path, dirResponse.Files)
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				fmt.Println("cache doesn't have value, need to request")
+				dirResponse, err := dirscannerClient.Scan(ctx, &dirscanner.DirScanRequest{
+					Path: path,
+				})
+				if err != nil {
+					log.Fatal(err)
+				}
+				cacheMap.SetValue(path, dirResponse.Files)
+			}()
 		}
+		wg.Wait()
 		cacheMap.Print(path)
 	}
 }
