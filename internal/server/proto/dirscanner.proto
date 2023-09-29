@@ -13,11 +13,14 @@ message DirScanRequest {
 }
 
 message DirScanResponse {
-  DirTree tree = 1;
+  string path = 1;
+  repeated File files = 2;
 }
 
-message DirTree {
-  repeated string files = 1;
+
+message File {
+    string fileName = 1;
+    int64 size = 2;
 }
 
 
