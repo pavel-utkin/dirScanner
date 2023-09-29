@@ -13,7 +13,7 @@ type ConfigClient struct {
 // NewConfigClient - creates a new instance with the configuration for the client
 func NewConfig() *ConfigClient {
 	configClient := ConfigClient{
-		GRPC: "localhost:8080",
+		GRPC: "localhost:8080", // default value
 	}
 	flag.StringVar(&configClient.GRPC, "g", configClient.GRPC, "Server address")
 	flag.Parse()

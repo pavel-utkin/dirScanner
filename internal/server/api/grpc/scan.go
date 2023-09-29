@@ -8,7 +8,7 @@ import (
 )
 
 func (h *Handler) Scan(ctx context.Context, request *grpc.DirScanRequest) (*grpc.DirScanResponse, error) {
-	files := make([]*grpc.File, 10)
+	files := make([]*grpc.File, 0)
 	currentDir := &grpc.DirScanResponse{Path: request.Path, Files: files}
 	err := filepath.Walk(request.Path,
 		func(path string, info os.FileInfo, err error) error {

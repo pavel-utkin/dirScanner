@@ -4,7 +4,7 @@ import (
 	"context"
 	"dirScanner/internal/client/config"
 	dirscanner "dirScanner/internal/server/proto"
-	"encoding/json"
+	"dirScanner/internal/server/storage"
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -13,9 +13,8 @@ import (
 )
 
 func main() {
-
 	clientConfig := config.NewConfig()
-
+	ctx := context.Background()
 	conn, err := grpc.Dial(
 		clientConfig.GRPC,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -24,26 +23,27 @@ func main() {
 		log.Fatal(err)
 	}
 	dirscannerClient := dirscanner.NewDirscannerClient(conn)
-	fmt.Println(dirscannerClient)
-
-	ctx := context.Background()
-
-	var cacheMap = make(map[string][]*dirscanner.File)
+	var cacheMap = storage.NewCacheStorage()
 
 	for {
 		var path string
-		fmt.Fscan(os.Stdin, &path)
-		dirResponse, err := dirscannerClient.Scan(ctx, &dirscanner.DirScanRequest{
-			Path: path,
-		})
-
-		cacheMap[path] = dirResponse.Files
-		println(cacheMap)
-		println(json.Marshal(dirResponse.Files))
-
+		fmt.Println("Enter directory path : ")
+		_, err = fmt.Fscan(os.Stdin, &path)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(dirResponse)
+
+		_, ok := cacheMap.GetValue(path)
+		if !ok {
+			fmt.Println("cache doesn't have value, need to request")
+			dirResponse, err := dirscannerClient.Scan(ctx, &dirscanner.DirScanRequest{
+				Path: path,
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+			cacheMap.SetValue(path, dirResponse.Files)
+		}
+		cacheMap.Print(path)
 	}
 }
